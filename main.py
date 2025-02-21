@@ -8,6 +8,8 @@ import random
 app = Flask(__name__)
 CORS(app)
 
+TELEX_WEBHOOK_URL = "https://ping.telex.im/v1/webhooks/019528e7-3b28-7509-971e-312db7e9d0a0"  # Replace if needed
+
 
 def load_challenges():
     with open('coding_challenges.json') as file:
@@ -30,8 +32,12 @@ def send_coding_challenge():
         'message': f' Today\'s coding challenge:\n\n {challenge} \n\n Good luck! 🚀'
     }
 
-    return jsonify(payload), 200
-
+    response = requests.post(TELEX_WEBHOOK_URL, json=payload, headers={"Content-Type": "application/json"})
+    
+    if response.status_code == 202:
+        return jsonify({'message': 'Coding challenge sent successfully!'})
+    else:
+        return jsonify({'message': 'Failed to send coding challenge!', 'details': response.text}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=False)
