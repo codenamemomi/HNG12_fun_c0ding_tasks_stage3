@@ -38,11 +38,11 @@ sheduler.add_job(send_coding_challenge, 'interval', minutes=60)
 sheduler.start()
 
 
-@app.route('/check', methods=['GET'])
+@app.route('/', methods=['GET'])
 def home():
     return jsonify({'message': 'fun coding challenge Telex Integration is up and running!'})
 
-@app.route('/', methods=['POST'])
+@app.route('/check', methods=['POST'])
 def start():
     send_coding_challenge()
     return jsonify({'message': 'Coding challenge sent!'})
