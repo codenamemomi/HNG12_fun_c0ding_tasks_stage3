@@ -1,0 +1,162 @@
+[
+    {
+      "id": 1,
+      "challenge": "Write a function that checks if a string is a palindrome."
+    },
+    {
+      "id": 2,
+      "challenge": "Find the missing number in an array of 1 to N."
+    },
+    {
+      "id": 3,
+      "challenge": "Reverse a linked list in place."
+    },
+    {
+      "id": 4,
+      "challenge": "Implement binary search on a sorted array."
+    },
+    {
+      "id": 5,
+      "challenge": "Find the longest common prefix among an array of strings."
+    },
+    {
+      "id": 6,
+      "challenge": "Sort an array using the merge sort algorithm."
+    },
+    {
+      "id": 7,
+      "challenge": "Determine if two strings are anagrams of each other."
+    },
+    {
+      "id": 8,
+      "challenge": "Implement a function to generate Fibonacci numbers up to N."
+    },
+    {
+      "id": 9,
+      "challenge": "Write a function that converts a Roman numeral to an integer."
+    },
+    {
+      "id": 10,
+      "challenge": "Implement a stack using only queues."
+    },
+    {
+      "id": 11,
+      "challenge": "Find the intersection of two linked lists."
+    },
+    {
+      "id": 12,
+      "challenge": "Check if a given number is prime."
+    },
+    {
+      "id": 13,
+      "challenge": "Implement depth-first search (DFS) on a graph."
+    },
+    {
+      "id": 14,
+      "challenge": "Implement breadth-first search (BFS) on a graph."
+    },
+    {
+      "id": 15,
+      "challenge": "Find the first non-repeating character in a string."
+    },
+    {
+      "id": 16,
+      "challenge": "Find the maximum subarray sum using Kadane’s algorithm."
+    },
+    {
+      "id": 17,
+      "challenge": "Convert a binary number (given as a string) to decimal."
+    },
+    {
+      "id": 18,
+      "challenge": "Determine if a given Sudoku board is valid."
+    },
+    {
+      "id": 19,
+      "challenge": "Implement Dijkstra’s algorithm for shortest paths."
+    },
+    {
+      "id": 20,
+      "challenge": "Find the lowest common ancestor in a binary tree."
+    },
+    {
+      "id": 21,
+      "challenge": "Implement a queue using two stacks."
+    },
+    {
+      "id": 22,
+      "challenge": "Generate all possible subsets of a given set."
+    },
+    {
+      "id": 23,
+      "challenge": "Determine if a string has all unique characters."
+    },
+    {
+      "id": 24,
+      "challenge": "Find the kth smallest element in a sorted matrix."
+    },
+    {
+      "id": 25,
+      "challenge": "Find the duplicate number in an array where numbers are 1 to N."
+    },
+    {
+      "id": 26,
+      "challenge": "Flatten a nested list of integers."
+    },
+    {
+      "id": 27,
+      "challenge": "Merge two sorted linked lists into one sorted list."
+    },
+    {
+      "id": 28,
+      "challenge": "Find the longest palindromic substring in a string."
+    },
+    {
+      "id": 29,
+      "challenge": "Implement an LRU (Least Recently Used) cache."
+    },
+    {
+      "id": 30,
+      "challenge": "Find the majority element in an array (appears more than n/2 times)."
+    },
+    {
+      "id": 31,
+      "challenge": "Check if a binary tree is height-balanced."
+    },
+    {
+      "id": 32,
+      "challenge": "Find the shortest path in a maze using BFS."
+    },
+    {
+      "id": 33,
+      "challenge": "Rotate an NxN matrix by 90 degrees."
+    },
+    {
+      "id": 34,
+      "challenge": "Find the median of two sorted arrays."
+    },
+    {
+      "id": 35,
+      "challenge": "Implement a trie (prefix tree)."
+    },
+    {
+      "id": 36,
+      "challenge": "Find the next permutation of a given number sequence."
+    },
+    {
+      "id": 37,
+      "challenge": "Determine if a string can be rearranged into a palindrome."
+    },
+    {
+      "id": 38,
+      "challenge": "Count the number of islands in a 2D grid (connected regions of 1s)."
+    },
+    {
+      "id": 39,
+      "challenge": "Find the largest rectangle in a histogram."
+    },
+    {
+      "id": 40,
+      "challenge": "Find the number of ways to climb a staircase with steps 1 or 2 at a time."
+    }
+]
