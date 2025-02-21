@@ -32,7 +32,15 @@ def send_coding_challenge():
         'message': f' Today\'s coding challenge:\n\n {challenge} \n\n Good luck! 🚀'
     }
 
-    response = requests.post(TELEX_WEBHOOK_URL, json=payload, headers={"Content-Type": "application/json"})
+    response = requests.post(
+    TELEX_WEBHOOK_URL,
+    json=payload,
+    headers={
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
+    )
+
     
     if response.status_code == 202:
         return jsonify({'message': 'Coding challenge sent successfully!'})
