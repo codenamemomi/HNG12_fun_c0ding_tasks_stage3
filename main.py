@@ -34,7 +34,7 @@ def send_coding_challenge():
     else:
         print(f'Error sending challenge. Status code: {response.status_code}, Response: {response.text}')
 sheduler = BackgroundScheduler()
-sheduler.add_job(send_coding_challenge, 'interval', hours=1)
+sheduler.add_job(send_coding_challenge, 'interval', minutes=10)
 sheduler.start()
 
 
@@ -48,4 +48,4 @@ def start():
     return jsonify({'message': 'Coding challenge sent!'})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(debug=True, use_reloader=False)
