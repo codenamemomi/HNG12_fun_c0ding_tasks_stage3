@@ -8,7 +8,7 @@ import random
 app = Flask(__name__)
 CORS(app)
 
-TELEX_WEBHOOK_URL = "https://ping.telex.im/v1/webhooks/019528e7-3b28-7509-971e-312db7e9d0a0"  # Replace if needed
+TELEX_WEBHOOK_URL = "https://ping.telex.im/v1/webhooks/01952a91-7a83-7e8f-a413-2ed9c2c983cd"  # Replace if needed
 
 
 def load_challenges():
