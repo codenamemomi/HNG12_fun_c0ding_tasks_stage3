@@ -34,7 +34,7 @@ def send_coding_challenge():
     else:
         print(f'Error sending challenge. Status code: {response.status_code}, Response: {response.text}')
 sheduler = BackgroundScheduler()
-sheduler.add_job(send_coding_challenge, 'interval', minutes=60)
+sheduler.add_job(send_coding_challenge, 'interval', minutes=1)
 sheduler.start()
 
 
