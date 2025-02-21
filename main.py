@@ -1,8 +1,9 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import json
 import requests
 import random
+
 
 
 app = Flask(__name__)
@@ -19,6 +20,13 @@ def load_challenges():
 @app.route('/', methods=['GET'])
 def home():
     return jsonify({'message': 'fun coding challenge Telex Integration is up and running!'})
+
+@app.route('/receive', methods=['POST'])
+def receive_from_telex():
+    data = request.json
+    print('Received data from Telex:', data)
+
+    return jsonify({'message': 'Data received successfully!'})
 
 @app.route('/check', methods=['POST'])
 def send_coding_challenge():
