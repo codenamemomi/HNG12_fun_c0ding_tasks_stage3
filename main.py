@@ -33,7 +33,14 @@ def get_integration_json(request: Request):
                 'app_url': base_url,
                 'background_color': '#fff'
             },
+            'is_active': True,
             'integration_type': 'interval',
+            'integration_category': 'Task Automation',
+            'key_features': [
+                'Sends a random coding challenge every day',
+                'Helps you stay consistent with your coding practice',
+                'Keeps you motivated and engaged'
+            ],
             'settings': [
                 {
                     'label': 'Time Interval',
