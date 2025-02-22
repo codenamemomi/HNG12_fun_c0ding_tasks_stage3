@@ -36,7 +36,7 @@ def get_integration_json(request: Request):
                     "label": "Time Interval",
                     "type": "text",
                     "required": True,
-                    "default": "24h"
+                    "default": "1m"
                 }
             ],
             "tick_url": f"{base_url}/tick"
