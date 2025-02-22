@@ -18,6 +18,10 @@ def get_integration_json():
     base_url = request.base_url.rstrip('/')
     return jsonify({
         'data': {
+            'date':{
+                'created': '2025-02-21',
+                'updated': '2025-02-21'
+            },
             'descriptions': {
                 'app_description': 'Sends a random coding challenge every day.',
                 'app_name': 'Fun Coding Challenge',
@@ -33,6 +37,8 @@ def get_integration_json():
                 'Helps you stay consistent with your coding practice',
                 'Keeps you motivated and engaged'
             ],
+            'author': 'codenamemomi',
+            'website': base_url,
             'settings': [
                 {
                     'label': 'Time Interval',
@@ -98,4 +104,4 @@ def receive_data_from_telex():
     return jsonify({'status': 'success'}), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=5000)
+    app.run()
