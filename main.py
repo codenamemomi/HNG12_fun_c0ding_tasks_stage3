@@ -7,8 +7,8 @@ import psutil  # CPU Usage Tracking
 import time  # For request latency
 from flask import Flask, g, Response, jsonify, request
 from flask_cors import CORS
-from prometheus_flask_exporter import PrometheusMetrics
-from prometheus_client import CollectorRegistry, Histogram, Gauge, generate_latest
+import concurrent.futures
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -16,14 +16,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)
 
-metrics = PrometheusMetrics(app, path=None)  # Disable default metrics endpoint
 
-metrics.info('app_info', 'Telex Coding Challenge Integration', version='1.0.0')
-
-custom_registry = CollectorRegistry()
-
-latency_metric = Histogram('request_latency_seconds', 'Request latency in seconds', registry=custom_registry)
-cpu_metric = Gauge('cpu_usage_percent', 'Current CPU usage percentage', registry=custom_registry)
 
 TELEX_WEBHOOK_URL = "https://ping.telex.im/v1/webhooks/01952a91-7a83-7e8f-a413-2ed9c2c983cd"
 
@@ -32,21 +25,6 @@ def start_timer():
     ''' Start the timer before processing a request '''
     g.start_time = time.time()
 
-@app.after_request
-def log_request_latency(response):
-    ''' Log request latency and CPU usage '''
-    try:
-        if hasattr(g, "start_time"):
-            latency = time.time() - g.start_time
-            latency_metric.observe(latency)
-
-        # Track CPU Usage
-        cpu_metric.set(psutil.cpu_percent(interval=1))
-
-    except Exception as e:
-        logger.error(f"Error logging request metrics: {e}")
-    
-    return response
 
 @app.route("/")
 def get_integration_json():
@@ -75,18 +53,17 @@ def get_integration_json():
             'author': 'codenamemomi',
             'website': base_url,
             'settings': [
-                {
-                    'label': 'Time Interval',
-                    'type': 'text',
-                    'required': True,
-                    'default': '* * * * *',
-                }
+                {"label": "challenge-type", "type": "text", "required": True, "default": "algorithm"},
+                {"label": "difficulty", "type": "text", "required": True, "default": "medium"},
+                {"label": "interval", "type": "text", "required": True, "default": "* * * * *"}
             ],
             'target_url': '',
             'tick_url': f'{base_url}/tick'
         }
     })
 
+
+executors = concurrent.futures.ThreadPoolExecutor()
 
 @app.route("/tick", methods=["POST", "GET"])
 def tick():
@@ -100,8 +77,9 @@ def tick():
     if payload is None:
         return jsonify({"status": "error", "message": "Invalid JSON format"}), 400
     
-    threading.Thread(target=process_challenge, args=(payload,)).start()
-    return jsonify({"status": "success", "timestamp": time.strftime('%Y-%m-%d %H:%M:%S')}), 202
+    executors.submit(process_challenge, payload)
+    return jsonify({"status": "accepted"}), 202
+
 
 def load_challenges():
     ''' Load coding challenges from a JSON file '''
@@ -133,14 +111,6 @@ def process_challenge(payload):
         logger.error(f"Error sending challenge: {e}")
 
 
-@app.route("/metrics")
-def return_metrics_data():
-    ''' Return latency and CPU usage metrics '''
-    try:
-        return Response(generate_latest(custom_registry), mimetype="text/plain")
-    except Exception as e:
-        logger.error(f"Error generating metrics: {e}")
-        return jsonify({"message": "Error generating latest metrics"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
