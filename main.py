@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 url = 'https://ping.telex.im/v1/webhooks/01952a91-7a83-7e8f-a413-2ed9c2c983cd'
 
-@app.route('/integration.json', methods=['GET'])
+@app.route('/integration.json')
 def get_integration_json():
     base_url = request.base_url.rstrip('/')
     return jsonify({
