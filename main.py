@@ -7,7 +7,7 @@ import logging
 
 app = FastAPI()
 
-TELEX_WEBHOOK_URL = 'https://ping.telex.im/v1/webhooks/01952a91-7a83-7e8f-a413-2ed9c2c983cd'  # Replace if needed
+TELEX_WEBHOOK_URL = 'https://ping.telex.im/v1/webhooks/01952a91-7a83-7e8f-a413-2ed9c2c983cd' 
 
 
 def load_challenges():
@@ -26,11 +26,13 @@ def get_integration_json(request: Request):
     base_url = str(request.base_url).rstrip('/')
     return {
         'data': {
-            'description': 'Sends a random coding challenge every day.',
-            'app_name': 'Fun Coding Challenge',
-            'app_logo': 'https://res.cloudinary.com/drujauolr/image/upload/v1740162155/interval_clo1tq.webp',
-            'app_url': base_url,
-            'background_color': '#fff',
+            'descriptions': {
+                'app_description': 'Sends a random coding challenge every day.',
+                'app_name': 'Fun Coding Challenge',
+                'app_logo': 'https://res.cloudinary.com/drujauolr/image/upload/v1740162155/interval_clo1tq.webp',
+                'app_url': base_url,
+                'background_color': '#fff'
+            },
             'integration_type': 'interval',
             'settings': [
                 {
