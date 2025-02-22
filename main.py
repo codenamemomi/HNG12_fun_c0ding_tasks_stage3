@@ -53,6 +53,7 @@ async def receive_data_from_telex(data: dict):
 
 @app.post("/tick", status_code=202)
 def tick(payload: MonitorPayload, background_tasks: BackgroundTasks):
+    logging.info(f"Received tick from Telex.{payload}")
     background_tasks.add_task(process_challenge, payload)
     return {"status": "accepted"}
 
