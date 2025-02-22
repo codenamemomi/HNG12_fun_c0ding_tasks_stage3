@@ -82,7 +82,7 @@ def get_integration_json():
                     'default': '* * * * *',
                 }
             ],
-            'target_url': f'',
+            'target_url': '',
             'tick_url': f'{base_url}/tick'
         }
     })
@@ -91,7 +91,7 @@ def get_integration_json():
 @app.route("/tick", methods=["POST", "GET"])
 def tick():
     ''' Telex calls this endpoint at scheduled intervals '''
-    logger.info(f"Received /tick request: {request.get_json()}")
+    logger.info(f"Received /tick request at {time.strftime('%Y-%m-%d %H:%M:%S')} with payload: {request.get_json()}")
 
     if request.content_type and request.content_type != "application/json":
         return jsonify({"status": "error", "message": "Invalid content type"}), 400
@@ -101,7 +101,7 @@ def tick():
         return jsonify({"status": "error", "message": "Invalid JSON format"}), 400
     
     threading.Thread(target=process_challenge, args=(payload,)).start()
-    return jsonify({"status": "success"}), 202
+    return jsonify({"status": "success", "timestamp": time.strftime('%Y-%m-%d %H:%M:%S')}), 202
 
 def load_challenges():
     ''' Load coding challenges from a JSON file '''
