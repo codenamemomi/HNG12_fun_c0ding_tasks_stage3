@@ -47,13 +47,17 @@ def get_integration_json():
                     'default': '* * * * *',
                 }
             ],
-            'target_url': f'{base_url}/receive',
+            'target_url': f'',
             'tick_url': f'{base_url}/tick'
         }
     })
 
+
 @app.route('/tick', methods=['POST'])
 def tick():
+    logging.info(f'received tick request from Telex: {request.get_json}')
+
+    
     if request.content_type != 'application/json':
         return jsonify({'status': 'error', 'message': 'Invalid content type'}), 400
     
