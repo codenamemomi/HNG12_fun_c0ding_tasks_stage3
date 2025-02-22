@@ -35,9 +35,9 @@ def get_integration_json(request: Request):
             "settings": [
                 {
                     "label": "Time Interval",
-                    "type": "number",
+                    "type": "text",
                     "required": True,
-                    "default": 1,
+                    "default": '1min',
                 }
             ],
             "tick_url": f"{base_url}/tick"
@@ -51,8 +51,8 @@ async def receive_data_from_telex(data: dict):
     return {"message": "Data received successfully"}
 
 
-@app.post("/check", status_code=202)
-def check(payload: MonitorPayload, background_tasks: BackgroundTasks):
+@app.post("/tick", status_code=202)
+def tick(payload: MonitorPayload, background_tasks: BackgroundTasks):
     background_tasks.add_task(process_challenge, payload)
     return {"status": "accepted"}
 
