@@ -1,21 +1,56 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import threading
-import requests
+import logging
 import random
 import json
-import logging
+import threading
+import requests
+import psutil  # CPU Usage Tracking
+import time  # For request latency
+from flask import Flask, g, Response, jsonify, request
+from flask_cors import CORS
+from prometheus_flask_exporter import PrometheusMetrics
+from prometheus_client import CollectorRegistry, Histogram, Gauge, generate_latest
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
 
-logging.basicConfig(level=logging.INFO)
+metrics = PrometheusMetrics(app, path=None)  # Disable default metrics endpoint
 
-url = 'https://ping.telex.im/v1/webhooks/01952a91-7a83-7e8f-a413-2ed9c2c983cd'
+metrics.info('app_info', 'Telex Coding Challenge Integration', version='1.0.0')
 
-@app.route('/')
+custom_registry = CollectorRegistry()
+
+latency_metric = Histogram('request_latency_seconds', 'Request latency in seconds', registry=custom_registry)
+cpu_metric = Gauge('cpu_usage_percent', 'Current CPU usage percentage', registry=custom_registry)
+
+TELEX_WEBHOOK_URL = "https://ping.telex.im/v1/webhooks/01952a91-7a83-7e8f-a413-2ed9c2c983cd"
+
+@app.before_request
+def start_timer():
+    ''' Start the timer before processing a request '''
+    g.start_time = time.time()
+
+@app.after_request
+def log_request_latency(response):
+    ''' Log request latency and CPU usage '''
+    try:
+        if hasattr(g, "start_time"):
+            latency = time.time() - g.start_time
+            latency_metric.observe(latency)
+
+        # Track CPU Usage
+        cpu_metric.set(psutil.cpu_percent(interval=1))
+
+    except Exception as e:
+        logger.error(f"Error logging request metrics: {e}")
+    
+    return response
+
+@app.route("/")
 def get_integration_json():
-    base_url = request.base_url.rstrip('/')
+    base_url = request.url_root.rstrip("/")
     return jsonify({
         'data': {
             'date':{
@@ -53,59 +88,59 @@ def get_integration_json():
     })
 
 
-@app.route('/tick', methods=['POST', 'GET'])
+@app.route("/tick", methods=["POST", "GET"])
 def tick():
-    logging.info(f'received tick request from Telex: {request.get_json}')
+    ''' Telex calls this endpoint at scheduled intervals '''
+    logger.info(f"Received /tick request: {request.get_json()}")
 
-
-    if request.content_type != 'application/json':
-        return jsonify({'status': 'error', 'message': 'Invalid content type'}), 400
+    if request.content_type and request.content_type != "application/json":
+        return jsonify({"status": "error", "message": "Invalid content type"}), 400
     
     payload = request.get_json(silent=True)
     if payload is None:
-        return jsonify({'status': 'error', 'message': 'Invalid payload'}), 400
+        return jsonify({"status": "error", "message": "Invalid JSON format"}), 400
     
     threading.Thread(target=process_challenge, args=(payload,)).start()
-    return jsonify({'status': 'success'}), 200
+    return jsonify({"status": "success"}), 202
 
 def load_challenges():
-    with open('coding_challenges.json') as file:
+    ''' Load coding challenges from a JSON file '''
+    with open("coding_challenges.json") as file:
         return json.load(file)
 
 def process_challenge(payload):
-    logging.info('Processing challenge...')
+    ''' Select and send a coding challenge to Telex '''
+    logger.info("Processing challenge...")
 
     try:
         challenges = load_challenges()
         challenge_text = random.choice(challenges)["challenge"]
 
         message_data = {
-            'message': f'🚀 Today\'s coding challenge:\n\n{challenge_text}\n\nGood luck!',
-            'username': 'Fun Coding Bot',
-            'event_name': 'coding_challenge',
-            'status': 'success'
+            "message": f"🚀 Today's coding challenge:\n\n{challenge_text}\n\nGood luck!",
+            "username": "Fun Coding Bot",
+            "event_name": "coding_challenge",
+            "status": "success"
         }
 
-        response = requests.post(url, json=message_data, headers={
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+        response = requests.post(payload["return_url"], json=message_data, headers={
+            "Accept": "application/json",
+            "Content-Type": "application/json"
         })
 
-        logging.info(f'Challenge sent: {response.status_code}, {response.text}')
+        logger.info(f"Challenge sent: {response.status_code}, {response.text}")
     except Exception as e:
-        logging.error(f'Error sending challenge: {e}')
+        logger.error(f"Error sending challenge: {e}")
 
-@app.route('/receive', methods=['POST'])
-def receive_data_from_telex():
-    if request.content_type != 'application/json':
-        return jsonify({'status': 'error', 'message': 'Invalid content type'}), 400
-    
-    data = request.get_json(silent=True)
-    if data is None:
-        return jsonify({'status': 'error', 'message': 'Invalid JSON format'}), 400
-    
-    logging.info(f'Data received from Telex: {data}')
-    return jsonify({'status': 'success'}), 200
 
-if __name__ == '__main__':
-    app.run()
+@app.route("/metrics")
+def return_metrics_data():
+    ''' Return latency and CPU usage metrics '''
+    try:
+        return Response(generate_latest(custom_registry), mimetype="text/plain")
+    except Exception as e:
+        logger.error(f"Error generating metrics: {e}")
+        return jsonify({"message": "Error generating latest metrics"}), 500
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
