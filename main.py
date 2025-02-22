@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import httpx
 import json
 import random
+import logging
 
 app = FastAPI()
 
@@ -34,9 +35,9 @@ def get_integration_json(request: Request):
             "settings": [
                 {
                     "label": "Time Interval",
-                    "type": "text",
+                    "type": "number",
                     "required": True,
-                    "default": "1m"
+                    "default": 1,
                 }
             ],
             "tick_url": f"{base_url}/tick"
@@ -45,19 +46,25 @@ def get_integration_json(request: Request):
 
 
 @app.post("/receive")
-def receive_data_from_telex(data: dict):
+async def receive_data_from_telex(data: dict):
     print("Received data from Telex:", data)
     return {"message": "Data received successfully"}
 
 
 @app.post("/check", status_code=202)
-def send_coding_challenge(payload: MonitorPayload, background_tasks: BackgroundTasks):
+def check(payload: MonitorPayload, background_tasks: BackgroundTasks):
     background_tasks.add_task(process_challenge, payload)
     return {"status": "accepted"}
 
+logging.basicConfig(level=logging.INFO)
+
 async def process_challenge(payload: MonitorPayload):
+    logging.info("Processing challenge...")
+
     challenges = load_challenges()
     challenge = random.choice(challenges)["challenge"]
+
+    logging.info(f"Sending challenge to Telex: {challenge}")
 
     message_data = {
         "message": f"🚀 Today's coding challenge:\n\n{challenge}\n\nGood luck!",
@@ -67,8 +74,11 @@ async def process_challenge(payload: MonitorPayload):
     }
 
     async with httpx.AsyncClient() as client:
-        response = await client.post(payload.return_url, json=message_data)
-        print(f"Sent challenge to Telex. Response: {response.status_code}, {response.text}")
+        try:
+            response = await client.post(payload.return_url, json=message_data)
+            logging.info(f"Response from Telex: {response.status_code}, {response.text}")
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
 
 
 @app.get("/")
